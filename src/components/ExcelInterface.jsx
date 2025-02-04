@@ -1634,6 +1634,191 @@
 // export default ExcelInterface;
 
 
+// import React, { useState, useEffect } from 'react';
+// import _ from 'lodash';
+
+// const ExcelInterface = ({ scheduleData }) => {
+//     const [dates, setDates] = useState([]);
+//     const [monthRanges, setMonthRanges] = useState([]);
+//     const [gridData, setGridData] = useState([]);
+//     const [placeGroups, setPlaceGroups] = useState([]);
+
+//     const parseCustomDate = (dateStr, year = 2025) => {
+//         const [month, day] = dateStr.split(' ');
+//         const monthIndex = new Date(`${month} 1, 2000`).getMonth();
+//         return new Date(year, monthIndex, parseInt(day));
+//     };
+
+//     useEffect(() => {
+//         console.log(scheduleData);
+
+//         // // Generate dates from 2025 to 2030
+//         // const generateDates = () => {
+//         //     const allDates = [];
+//         //     const startDate = new Date(2025, 0, 1); // January 1, 2025
+//         //     const endDate = new Date(2030, 11, 31); // December 31, 2030
+
+//         //     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+//         //         allDates.push(new Date(d));
+//         //     }
+//         //     return allDates;
+//         // };
+
+//         // const allDates = generateDates();
+//         // setDates(allDates);
+
+//         // // Create month ranges with year
+//         // const months = _.groupBy(allDates, d =>
+//         //     `${d.getFullYear()}-${d.getMonth()}`
+//         // );
+
+//         // const monthRangeData = Object.entries(months).map(([key, dates]) => {
+//         //     const date = dates[0];
+//         //     return {
+//         //         month: `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`,
+//         //         start: dates[0],
+//         //         end: dates[dates.length - 1],
+//         //         colSpan: dates.length
+//         //     };
+//         // });
+//         // setMonthRanges(monthRangeData);
+
+//         // if (scheduleData && scheduleData.length > 0) {
+//         //     // Process projects with correct dates
+//         //     const processedData = scheduleData.map(place => ({
+//         //         place: place.place,
+//         //         projects: place.projects.map(project => ({
+//         //             code: project.code,
+//         //             start: parseCustomDate(project.startDate, 2025),
+//         //             end: parseCustomDate(project.endDate, 2025)
+//         //         }))
+//         //     }));
+
+//         //     // Group projects by place
+//         //     const groupedByPlace = _.groupBy(
+//         //         processedData.flatMap(place =>
+//         //             place.projects.map(project => ({
+//         //                 place: place.place,
+//         //                 code: project.code,
+//         //                 start: project.start,
+//         //                 end: project.end
+//         //             }))
+//         //         ),
+//         //         'place'
+//         //     );
+
+//         //     // Create place groups with rowspan information
+//         //     const placeGroupsData = Object.entries(groupedByPlace).map(([place, projects]) => ({
+//         //         place,
+//         //         rowspan: projects.length,
+//         //         projects
+//         //     }));
+//         //     setPlaceGroups(placeGroupsData);
+
+//         //     // Flatten data for grid
+//         //     const flattenedData = placeGroupsData.flatMap(group =>
+//         //         group.projects.map(project => ({
+//         //             ...project,
+//         //             isFirstInGroup: group.projects.indexOf(project) === 0
+//         //         }))
+//         //     );
+//         //     setGridData(flattenedData);
+//         // }
+//     }, [scheduleData]);
+
+//     const isProjectStartDate = (project, date) => {
+//         return date.toDateString() === project.start.toDateString();
+//     };
+
+//     const isDateInProject = (project, date) => {
+//         return date >= project.start && date <= project.end;
+//     };
+
+//     const getCurrentDate = () => {
+//         const today = new Date();
+//         return today.toLocaleDateString('en-US', {
+//             year: 'numeric',
+//             month: 'long',
+//             day: 'numeric'
+//         });
+//     };
+
+//     return (
+//         <div className="w-full overflow-x-auto" style={{ maxWidth: "100vw", overflowX: "auto", whiteSpace: "nowrap" }}>
+//             <table className="border-collapse" style={{ width: "2500px" }}>
+//                 <thead>
+//                     <tr>
+//                         <th className="border p-2 bg-gray-50 text-left">
+//                             {getCurrentDate()}
+//                         </th>
+//                         {monthRanges.map((month, idx) => (
+//                             <th
+//                                 key={idx}
+//                                 colSpan={month.colSpan}
+//                                 className="border p-2 bg-orange-100 text-center font-bold"
+//                             >
+//                                 {month.month}
+//                             </th>
+//                         ))}
+//                     </tr>
+
+//                     <tr>
+//                         <th rowSpan={2} className="border p-2 bg-gray-50 text-center font-bold">
+//                             PLACE
+//                         </th>
+//                         {dates.map((date, idx) => (
+//                             <th key={idx} className="border p-2 bg-gray-50 text-center w-8 font-bold">
+//                                 {date.getDate()}
+//                             </th>
+//                         ))}
+//                     </tr>
+
+//                     <tr>
+//                         {dates.map((date, idx) => (
+//                             <th key={idx} className="border p-2 bg-gray-50 text-center font-bold">
+//                                 {date.toLocaleString('default', { weekday: 'short' })[0]}
+//                             </th>
+//                         ))}
+//                     </tr>
+//                 </thead>
+
+//                 <tbody>
+//                     {gridData.map((row, rowIdx) => (
+//                         <tr key={rowIdx}>
+//                             {row.isFirstInGroup && (
+//                                 <td
+//                                     rowSpan={placeGroups.find(g => g.place === row.place).rowspan}
+//                                     className="border p-2 font-medium bg-white"
+//                                 >
+//                                     {row.place}
+//                                 </td>
+//                             )}
+//                             {dates.map((date, colIdx) => {
+//                                 const inProject = isDateInProject(row, date);
+//                                 const isStart = isProjectStartDate(row, date);
+//                                 return (
+//                                     <td
+//                                         key={colIdx}
+//                                         className="border p-2 text-center"
+//                                         style={{
+//                                             backgroundColor: inProject ? '#DBEAFE' : ''
+//                                         }}
+//                                     >
+//                                         {isStart ? row.code : ''}
+//                                     </td>
+//                                 );
+//                             })}
+//                         </tr>
+//                     ))}
+//                 </tbody>
+//             </table>
+//         </div>
+//     );
+// };
+
+// export default ExcelInterface;
+
+
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 
@@ -1643,11 +1828,10 @@ const ExcelInterface = ({ scheduleData }) => {
     const [gridData, setGridData] = useState([]);
     const [placeGroups, setPlaceGroups] = useState([]);
 
-    const parseCustomDate = (dateStr, year = 2025) => {
-        const [month, day] = dateStr.split(' ');
-        const monthIndex = new Date(`${month} 1, 2000`).getMonth();
-        return new Date(year, monthIndex, parseInt(day));
-    };
+    useEffect(() => {
+        console.log(gridData);
+
+    }, [gridData])
 
     useEffect(() => {
         // Generate dates from 2025 to 2030
@@ -1682,31 +1866,22 @@ const ExcelInterface = ({ scheduleData }) => {
         setMonthRanges(monthRangeData);
 
         if (scheduleData && scheduleData.length > 0) {
-            // Process projects with correct dates
-            const processedData = scheduleData.map(place => ({
-                place: place.place,
-                projects: place.projects.map(project => ({
-                    code: project.code,
-                    start: parseCustomDate(project.startDate, 2025),
-                    end: parseCustomDate(project.endDate, 2025)
+            // Group the flat data by place
+            const groupedByPlace = _.groupBy(scheduleData, 'place');
+
+            // Transform into required format
+            const transformedData = Object.entries(groupedByPlace).map(([place, projects]) => ({
+                place,
+                projects: projects.map(proj => ({
+                    place: proj.place,
+                    projNo: proj.projNo,  // Keep projNo in the transformed data
+                    start: new Date(proj.startDate),
+                    end: new Date(proj.endDate)
                 }))
             }));
 
-            // Group projects by place
-            const groupedByPlace = _.groupBy(
-                processedData.flatMap(place =>
-                    place.projects.map(project => ({
-                        place: place.place,
-                        code: project.code,
-                        start: project.start,
-                        end: project.end
-                    }))
-                ),
-                'place'
-            );
-
             // Create place groups with rowspan information
-            const placeGroupsData = Object.entries(groupedByPlace).map(([place, projects]) => ({
+            const placeGroupsData = transformedData.map(({ place, projects }) => ({
                 place,
                 rowspan: projects.length,
                 projects
@@ -1717,21 +1892,39 @@ const ExcelInterface = ({ scheduleData }) => {
             const flattenedData = placeGroupsData.flatMap(group =>
                 group.projects.map(project => ({
                     ...project,
+                    place: group.place,
                     isFirstInGroup: group.projects.indexOf(project) === 0
                 }))
             );
+            console.log(flattenedData);
+
             setGridData(flattenedData);
         }
     }, [scheduleData]);
 
+
+
+    // const isProjectStartDate = (project, date) => {
+    //     return date.getTime() === project.start.getTime();
+    // };
+
     const isProjectStartDate = (project, date) => {
-        return date.toDateString() === project.start.toDateString();
+        return date.getFullYear() === project.start.getFullYear() &&
+            date.getMonth() === project.start.getMonth() &&
+            date.getDate() === project.start.getDate();
     };
+
+    // const isDateInProject = (project, date) => {
+    //     return date >= project.start && date <= project.end;
+    // };
 
     const isDateInProject = (project, date) => {
-        return date >= project.start && date <= project.end;
+        const normalizeDate = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const normalizedDate = normalizeDate(date);
+        const normalizedStart = normalizeDate(project.start);
+        const normalizedEnd = normalizeDate(project.end);
+        return normalizedDate >= normalizedStart && normalizedDate <= normalizedEnd;
     };
-
     const getCurrentDate = () => {
         const today = new Date();
         return today.toLocaleDateString('en-US', {
@@ -1743,6 +1936,11 @@ const ExcelInterface = ({ scheduleData }) => {
 
     return (
         <div className="w-full overflow-x-auto" style={{ maxWidth: "100vw", overflowX: "auto", whiteSpace: "nowrap" }}>
+            {/* {gridData.map((row, index) => (
+                <p key={index}>
+                    {row.place} - {row.projNo} ({row.start.toDateString()} to {row.end.toDateString()})
+                </p>
+            ))} */}
             <table className="border-collapse" style={{ width: "2500px" }}>
                 <thead>
                     <tr>
@@ -1789,6 +1987,7 @@ const ExcelInterface = ({ scheduleData }) => {
                                     className="border p-2 font-medium bg-white"
                                 >
                                     {row.place}
+                                    {/* {row.code} */}
                                 </td>
                             )}
                             {dates.map((date, colIdx) => {
@@ -1802,7 +2001,7 @@ const ExcelInterface = ({ scheduleData }) => {
                                             backgroundColor: inProject ? '#DBEAFE' : ''
                                         }}
                                     >
-                                        {isStart ? row.code : ''}
+                                        {isStart ? row.projNo : ''}
                                     </td>
                                 );
                             })}
